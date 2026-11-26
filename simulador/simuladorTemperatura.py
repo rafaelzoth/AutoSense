@@ -9,7 +9,7 @@ caminhoArquivo = Path(__file__).parent.parent / "dados" / "temperaturas.csv"
 
 
 def lerTemperaturaSimulada():
-    #Hoje simula; depois será substituída pela leitura do Arduino.
+    # hoje simula; depois será substituída pela leitura do arduino
     return round(random.gauss(27, 2), 1)
 
 
@@ -36,5 +36,7 @@ def exportarRegistros(registros, caminho = caminhoArquivo):
 if __name__ == "__main__":
     registros = coletarRegistros(10)
     for registro in registros:
-        print(registro)
+        sensor, timestamp, temperatura = registro
+        dataHora = datetime.fromisoformat(timestamp).strftime("%d-%m-%Y %H:%M:%S")
+        print(f"{sensor} | {dataHora} | {temperatura:5.1f} °C")
     exportarRegistros(registros)
