@@ -1,35 +1,40 @@
-from datetime import date, datetime, timedelta
-from zoneinfo import ZoneInfo
-import time
 import csv
+import random
+import time
+from datetime import datetime
+from pathlib import Path
 
-idSensor = 'TEMP001'
-registros = []
-
-# simulacao de temperaturas
-temperaturasSimuladas = [25, 30, 27, 30, 24, 35, 31, 25, 25, 30]
-# fim das temperaturas simuladas
-
-for i in range(len(temperaturasSimuladas)):
-    horario = datetime.now().strftime('%H:%M:%S')
-    registroAtual = [idSensor, horario, temperaturasSimuladas[i]]
-    registros.append(registroAtual)
-
-    # simular 1seg entre os registros
-    time.sleep(1)
-    #fim da simulacao de tempo
-
-for i in registros:
-    print(i)
+idSensor = "TEMP001"
+caminhoArquivo = Path(__file__).parent.parent / "dados" / "temperaturas.csv"
 
 
-# exportar os dados
+def lerTemperaturaSimulada():
+    #Hoje simula; depois será substituída pela leitura do Arduino.
+    return round(random.gauss(27, 2), 1)
 
-arquivo = open('../dados/temperaturas.csv', 'w')
-escritor = csv.writer(arquivo)
-escritor.writerow(['idSensor', 'horario', 'temperatura'])
 
-for i in registros:
-    escritor.writerow(i)
+def coletarRegistros(quantidade, intervalo = 1):
+    registros = []
+    for _ in range(quantidade):
+        registros.append([
+            idSensor,
+            datetime.now().isoformat(timespec = "seconds"),
+            lerTemperaturaSimulada(),
+        ])
+        time.sleep(intervalo)
+    return registros
 
-arquivo.close()
+
+def exportarRegistros(registros, caminho = caminhoArquivo):
+    caminho.parent.mkdir(parents = True, exist_ok = True)
+    with open(caminho, "w", newline = "", encoding = "utf-8") as arquivo:
+        escritor = csv.writer(arquivo)
+        escritor.writerow(["idSensor", "timestamp", "temperatura"])
+        escritor.writerows(registros)
+
+
+if __name__ == "__main__":
+    registros = coletarRegistros(10)
+    for registro in registros:
+        print(registro)
+    exportarRegistros(registros)
