@@ -1,0 +1,1 @@
+AutoSense é um estudo em python que simula a coleta e o armazenamento de dados veiculares. Seu objetivo é desenvolver um sistema capaz de coletar dados de funcionamento de um veículo, interpretar essas informações e identificar comportamentos anormais por meio de análise de dados.
